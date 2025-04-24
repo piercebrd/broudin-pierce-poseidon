@@ -4,44 +4,61 @@ import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.services.TradeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
+@RequestMapping("/trade")
 public class TradeController {
 
     @Autowired
     private TradeService tradeService;
 
-    @GetMapping
-    public List<Trade> getAllTrades() {
-        return tradeService.findAll();
+    @GetMapping("/list")
+    public String list(Model model) {
+        model.addAttribute("trades", tradeService.findAll());
+        return "trade/list";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Trade> getTradeById(@PathVariable Integer id) {
+    @GetMapping("/add")
+    public String showAddForm(Trade trade) {
+        return "trade/add";
+    }
+
+    @PostMapping("/validate")
+    public String validate(@Valid Trade trade, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "trade/add";
+        }
+        tradeService.save(trade);
+        return "redirect:/trade/list";
+    }
+
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
         Trade trade = tradeService.findById(id);
-        return trade != null ? ResponseEntity.ok(trade) : ResponseEntity.notFound().build();
+        if (trade == null) {
+            return "redirect:/trade/list";
+        }
+        model.addAttribute("trade", trade);
+        return "trade/update";
     }
 
-    @PostMapping
-    public ResponseEntity<Trade> createTrade(@Valid @RequestBody Trade trade) {
-        return ResponseEntity.ok(tradeService.save(trade));
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable("id") Integer id, @Valid Trade trade, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "trade/update";
+        }
+        trade.setTradeId(id);
+        tradeService.save(trade);
+        return "redirect:/trade/list";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Trade> updateTrade(@PathVariable Integer id, @Valid @RequestBody Trade trade) {
-        trade.setId(id);
-        return ResponseEntity.ok(tradeService.save(trade));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTrade(@PathVariable Integer id) {
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Integer id, Model model) {
         tradeService.delete(id);
-        return ResponseEntity.noContent().build();
+        return "redirect:/trade/list";
     }
-
 }
