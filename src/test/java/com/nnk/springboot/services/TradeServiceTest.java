@@ -22,7 +22,7 @@ class TradeServiceTest {
     private TradeRepository tradeRepository;
 
     @InjectMocks
-    private TradeServiceImpl tradeService; // assuming you have TradeServiceImpl
+    private TradeServiceImpl tradeService;
 
     @BeforeEach
     void setUp() {

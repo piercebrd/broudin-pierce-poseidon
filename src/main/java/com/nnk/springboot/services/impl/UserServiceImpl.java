@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         // Encode password before saving if it's not already encoded
-        if (!user.getPassword().startsWith("$2a$")) { // quick check if already bcrypt
+        if (!user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         return userRepository.save(user);

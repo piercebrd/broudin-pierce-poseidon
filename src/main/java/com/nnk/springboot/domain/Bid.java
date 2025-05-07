@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "BidList") // Match your SQL table name exactly
+@Table(name = "BidList")
 public class Bid {
 
     @Id
